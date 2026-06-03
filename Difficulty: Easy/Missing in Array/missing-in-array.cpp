@@ -2,10 +2,10 @@ class Solution {
   public:
     int missingNum(vector<int>& arr) {
         // code here
-        long long n=arr.size();
-        long long sum=(n+1)*(n+2)/2;
-        for(auto itr: arr)
+        long long n=arr.size()+1;
+        long long sum=n*(n+1)/2;
+        for(auto itr : arr)
             sum-=itr;
-        return sum;
-    }
+        return (int)sum;
+    } 
 };
