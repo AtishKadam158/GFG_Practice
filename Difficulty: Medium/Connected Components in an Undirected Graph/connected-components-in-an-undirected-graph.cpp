@@ -1,36 +1,36 @@
 class Solution {
-  vector<int>visi;
-  vector<vector<int>>list_all;
   public:
-    void dfs(int node,vector<vector<int>>&adj,vector<int>&temp){
-        temp.push_back(node);
-        visi[node]=1;
-        
-        for(auto itr : adj[node]){
+    vector<vector<int>>compo;
+    void convert(vector<vector<int>>& edges,vector<vector<int>>& adj){
+        for(auto itr : edges){
+            adj[itr[0]].push_back(itr[1]);
+            adj[itr[1]].push_back(itr[0]);
+        }
+    }
+    void dfs(vector<int>&visi,vector<vector<int>>&adj,int i,vector<int>&temp){
+        visi[i]=1;
+        temp.push_back(i);
+        for(auto itr:adj[i]){
             if(!visi[itr]){
-                dfs(itr,adj,temp);
+                visi[itr]=1;
+                dfs(visi,adj,itr,temp);
             }
         }
     }
     vector<vector<int>> getComponents(int V, vector<vector<int>>& edges) {
         // code here
-        visi.assign(V,0);
         vector<vector<int>>adj(V);
-        for(int i=0;i<edges.size();i++){
-            int x=edges[i][0];
-            int y=edges[i][1];
-            
-            adj[x].push_back(y);
-            adj[y].push_back(x);
-        }
+        vector<int>visi(V,0);
+        convert(edges,adj);
         
         for(int i=0;i<V;i++){
-            if(!visi[i]){
+            if(visi[i]==0){
                 vector<int>temp;
-                dfs(i,adj,temp);
-                list_all.push_back(temp);
+                dfs(visi,adj,i,temp);
+                compo.push_back(temp);
             }
         }
-        return list_all;
+        return compo;
+        
     }
 };
