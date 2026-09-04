@@ -1,17 +1,10 @@
 class Solution {
   public:
-    void traverse(int i,vector<int>&visi,vector<vector<int>>& adj){
-        queue<int>q;
-        q.push(i);
+    void dfs(int i,vector<int>&visi,vector<vector<int>>& adj){
         visi[i]=1;
-        while(!q.empty()){
-            int temp=q.front();
-            q.pop();
-            for(auto itr:adj[temp]){
-                if(!visi[itr]){
-                    q.push(itr);
-                    visi[itr]=1;
-                }
+        for(auto itr : adj[i]){
+            if(!visi[itr]){
+                dfs(itr,visi,adj);
             }
         }
     }
@@ -31,7 +24,7 @@ class Solution {
         int count=0;
         for(int i=0;i<V;i++){
             if(!visited[i]){
-                traverse(i,visited,adj);
+                dfs(i,visited,adj);
                 count++;
             }
         }
