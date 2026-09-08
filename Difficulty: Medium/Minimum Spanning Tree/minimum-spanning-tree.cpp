@@ -1,43 +1,58 @@
-class Solution {
-  public:
-    void convert(vector<vector<int>>& edges, vector<vector<int>>& adj) {
-        for(auto itr: edges){
-            adj[itr[0]][itr[1]]=itr[2];
-            adj[itr[1]][itr[0]]=itr[2];
+class DisjointSet {
+    vector<int> parent;
+    vector<int> rank;
+public:
+    DisjointSet(int n) {
+        parent.resize(n);
+        rank.resize(n, 0);
+        for(int i = 0; i < n; i++)
+            parent[i] = i;
+    }
+
+    int find(int x) {
+        if(parent[x] == x)
+            return x;
+
+        return parent[x] = find(parent[x]);
+    }
+
+    void unionByRank(int a, int b) {
+        a = find(a);
+        b = find(b);
+        if(a == b)
+            return;
+        if(rank[a] < rank[b])
+            parent[a] = b;
+        else if(rank[a] > rank[b])
+            parent[b] = a;
+        else{
+            parent[b] = a;
+            rank[a]++;
         }
     }
+};
+class Solution {
+public:
     int spanningTree(int V, vector<vector<int>>& edges) {
-        // code here
-        vector<vector<int>>adj(V,vector<int>(V,INT_MAX));
-        convert(edges,adj);
-        
-        for(int i=0;i<V;i++)
-            adj[i][i]=0;
-        
-        int sum=0;
-        vector<vector<int>>mst;
-        vector<bool>visi(V,0);
-        priority_queue<pair<int,int>,vector<pair<int,int>>,greater<pair<int,int>>> pq;
-        pq.push({0,0});
-        
-        while(!pq.empty()){
-            pair<int,int>tmp=pq.top();
-            pq.pop();
-            
-            int node=tmp.second;
-            int wt=tmp.first;
-            
-            if(visi[node])
-                continue;
-            
-            visi[node]=1;
-            sum+=wt;
-            
-            for(int i=0;i<V;i++)
-                if(adj[node][i] != INT_MAX && !visi[i])
-                    pq.push({adj[node][i], i});
-                
+        DisjointSet ds(V);
+        vector<pair<int, pair<int, int>>> adj;
+        for(auto it : edges) {
+            int u = it[0];
+            int v = it[1];
+            int wt = it[2];
+            adj.push_back({wt, {u, v}});
         }
-        return sum;
+        sort(adj.begin(), adj.end());
+        int mstWt = 0;
+        for(auto it : adj) {
+            int wt = it.first;
+            int u = it.second.first;
+            int v = it.second.second;
+            if(ds.find(u) != ds.find(v)) {
+                mstWt += wt;
+                ds.unionByRank(u, v);
+            }
+        }
+        return mstWt;
     }
 };
