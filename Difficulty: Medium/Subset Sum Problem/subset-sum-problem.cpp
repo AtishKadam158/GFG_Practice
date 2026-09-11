@@ -1,19 +1,21 @@
 class Solution {
   public:
-    vector<vector<int>>memo;
-    bool subset_sum(vector<int>& arr,int target,int curr,int curr_sum){
-        if(curr_sum==target)
-            return true;
-            
-        if(curr>=arr.size() || curr_sum > target)
+    int n;
+    vector<vector<bool>>memo;
+    bool help(vector<int>& arr, int ind,int curr, int target){
+        if (curr > target) return false;
+        if(ind >= n){
+            if(curr == target)
+                return true;
             return false;
-        if(memo[curr][curr_sum]!=-1) return memo[curr][curr_sum];
-        return memo[curr][curr_sum]=subset_sum(arr,target,curr+1,curr_sum+arr[curr]) 
-        || subset_sum(arr,target,curr+1,curr_sum);
+        }
+        if(memo[ind][curr]) return memo[ind][curr];
+        return memo[ind][curr] = help(arr,ind+1,curr+arr[ind],target) || help(arr,ind+1,curr,target);
     }
     bool isSubsetSum(vector<int>& arr, int sum) {
-        int n=arr.size();
-        memo.assign(n,vector<int>(sum+1,-1));
-        return subset_sum(arr,sum,0,0);
+        // code here
+        n=arr.size();
+        memo.assign(n+1,vector<bool>(sum+1,0));
+        return help(arr,0,0,sum);
     }
 };
