@@ -2,28 +2,22 @@ class Solution {
   public:
     int n;
     vector<vector<int>>memo;
-    int solve(vector<int>& val, vector<int>& wt, int cap,int ind){
-        if(ind == n){
-            return 0;
+    int help(int i,vector<int>& val, vector<int>& wt, int cap){
+        if(i==0){
+            if(cap>=wt[0]) return (cap/wt[0])*val[0];
+            else return 0;
         }
-        
-        if(memo[ind][cap] != -1)
-            return memo[ind][cap];
-            
-            
+        if(memo[i][cap] != -1 ) return memo[i][cap];
+        int skip=help(i-1,val,wt,cap);
         int take=0;
-        
-        if(cap-wt[ind] >=0 )
-            take=val[ind] + solve(val,wt,cap-wt[ind],ind);
-            
-        int skip=solve(val,wt,cap,ind+1);
-        
-        return memo[ind][cap]=max(take,skip);
+        if(cap >= wt[i])
+            take=val[i]+help(i,val,wt,cap-wt[i]);
+        return memo[i][cap] =max(take,skip);
     }
     int knapSack(vector<int>& val, vector<int>& wt, int capacity) {
         // code here
         n=val.size();
-        memo.assign(n,vector<int>(capacity+1,-1));
-        return solve(val,wt,capacity,0);
+        memo.assign(n+1,vector<int>(capacity+1,-1));
+        return help(n-1,val,wt,capacity);
     }
 };
