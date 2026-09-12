@@ -1,21 +1,23 @@
 class Solution {
   public:
-    vector<vector<int>>memo;
     int n;
-    int solve(vector<int> &price,int ind, int sz){
-        if(ind == n || sz==0)
-            return 0;
-        if(memo[ind][sz]!=-1)   return memo[ind][sz];
+    vector<vector<int>>memo;
+    int help(int i,int len,vector<int>&price){
+        if(i==0)
+            return len * price[0];
+        
+        if(memo[i][len] != -1) return memo[i][len];
+        int skip=help(i-1,len,price);
         int take=0;
-        if(sz >= ind+1)
-            take=price[ind] + solve(price,ind,sz-ind-1);
-        int skip=solve(price,ind+1,sz);
-        return memo[ind][sz]=max(take,skip);
+        if(len >= i+1)
+            take=price[i]+help(i,len-(i+1),price);
+            
+        return memo[i][len]=max(skip,take);
     }
     int cutRod(vector<int> &price) {
         // code here
         n=price.size();
         memo.assign(n,vector<int>(n+1,-1));
-        return solve(price,0,n);
+        return help(n-1,n,price);
     }
 };
