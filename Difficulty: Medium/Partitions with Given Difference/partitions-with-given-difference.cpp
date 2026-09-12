@@ -1,32 +1,28 @@
 class Solution {
   public:
     vector<vector<int>>memo;
-    int n;
-    int count_part(vector<int>& arr, int target, int curr, int curr_sum){
-        if(curr==n)
-            return (curr_sum == target);
+    int help(int i,int target, vector<int>&arr){
+        if(i<0) return target==0;
+        
+        if(memo[i][target] != -1)
+            return memo[i][target];
+        int skip=help(i-1,target,arr);
+        int take=0;
+        if(target >= arr[i])
+            take=help(i-1,target-arr[i],arr);
             
-        if(memo[curr][curr_sum]!=-1)
-            return memo[curr][curr_sum];
-        
-        int x=0,y=0;
-        if(curr_sum+arr[curr] <= target)
-            x=count_part(arr,target,curr+1,curr_sum+arr[curr]);
-        y=count_part(arr,target,curr+1,curr_sum);
-        
-        return memo[curr][curr_sum]=x+y;
+        return memo[i][target] = take+skip;
     }
     int countPartitions(vector<int>& arr, int diff) {
         // Code here
-        n=arr.size();
-        int target=0;
-        for(auto itr: arr)
-            target+=itr;
-        if((target+diff) % 2 ==1)
-            return 0;
-        target=(target+diff)/2;
-        memo.assign(n,vector<int>(target+1,-1));
+        int n=arr.size();
+        long long sum=0;
+        for(auto itr:arr) sum+=itr;
         
-        return count_part(arr,target,0,0);
+        int target = (sum - diff);
+        if (target < 0 || target % 2 != 0) return 0; 
+        target /= 2;
+        memo.assign(n+1,vector<int>(target+1,-1));
+        return help(n-1,target,arr);
     }
 };
